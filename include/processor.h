@@ -1,12 +1,16 @@
 #ifndef PROCESSOR_H
 #define PROCESSOR_H
 
-class Processor {
- public:
-  float Utilization();  // TODO: See src/processor.cpp
+#include <vector>
 
-  // TODO: Declare any necessary private members
- private:
+class Processor {
+public:
+  Processor();
+  float Utilization();
+
+private:
+  std::vector<float> prev{10, 0.0};
+  std::vector<float> curr{10, 0.0}; 
 };
 
 #endif
