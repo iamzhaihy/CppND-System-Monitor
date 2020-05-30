@@ -55,13 +55,14 @@ std::string LinuxParser::Kernel() {
   std::string line;
   std::ifstream stream(kProcDirectory + kVersionFilename);
 
-  if (stream.is_open()) {
+  if (!stream.is_open()) {
+    LOG_ERROR("Failed to open file")
+    return "";
+  }
+
     std::getline(stream, line);
     return parseLine(line, R"(Linux version\s(.*?)\s.*)");
   }
-
-  return "";
-}
 
 // BONUS: Update this to use std::filesystem
 vector<int> LinuxParser::Pids() {
