@@ -4,8 +4,13 @@
 #include <regex>
 #include <string>
 #include <vector>
+#include <iostream>
 
-#include "linux_parser.h"
+#define LOG_ERROR(msg) {\
+    std::cerr << __FILE__ << ":" \
+              << __LINE__ << " " \
+              << msg << std::endl; \
+}
 
 using std::stof;
 using std::string;
