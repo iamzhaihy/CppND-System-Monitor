@@ -1,5 +1,7 @@
 #include <dirent.h>
 #include <unistd.h>
+
+#include <regex>
 #include <string>
 #include <vector>
 
@@ -9,6 +11,16 @@ using std::stof;
 using std::string;
 using std::to_string;
 using std::vector;
+
+// Given a string and a regex, return the first match
+static std::string parseLine(std::string s, std::string r) {
+  std::smatch match;
+  std::regex pattern(r);
+
+  if (!std::regex_search(s, match, pattern)) return "";
+
+  return match[1];
+}
 
 // DONE: An example of how to read data from the filesystem
 string LinuxParser::OperatingSystem() {
