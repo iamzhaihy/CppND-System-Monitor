@@ -318,10 +318,7 @@ long LinuxParser::UpTime(int pid) {
   std::getline(stream, line);
   std::istringstream linestream(line);
 
-  int count = 1;
-  long starttime = 0;
-
-  for(int i = 0; i < 22; i++){ 
+  for(int i = 0; i < 22; i++)
     linestream >> field;
 
   return LinuxParser::UpTime() - stol(field)/sysconf(_SC_CLK_TCK);
