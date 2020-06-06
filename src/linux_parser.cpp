@@ -192,6 +192,52 @@ int LinuxParser::RunningProcesses() {
   return std::stoi(num);
 }
 
+// DONE: Given a PID, compute and return the CPU usage
+float LinuxParser::ProcCpuUtilization(int pid) { 
+  std::string line, rge;
+  std::ifstream stream(
+    kProcDirectory + std::to_string(pid) + kStatFilename
+  );
+
+  if (!stream.is_open()) {
+    LOG_ERROR("Failed to open file")
+    return 0.0f;
+  }
+
+  std::string field;
+  std::getline(stream, line);
+  std::istringstream linestream(line);
+
+  int count = 1;
+  long uptime, starttime;
+  float utime, stime, cutime, cstime;
+
+  while (count <= 50) {
+    linestream >> field;
+
+    if (count == 14)
+      utime = std::stof(field);
+    else if (count == 15)
+      stime = std::stof(field);
+    else if (count == 16)
+      cutime = std::stof(field);
+    else if (count == 17)
+      cstime = std::stof(field);
+    else if (count == 22)
+      starttime = std::stol(field);
+    
+    count++;
+  }
+
+  uptime = LinuxParser::UpTime();
+
+  float total_time = utime + stime + cutime + cstime;
+
+  float seconds = uptime - (starttime / sysconf(_SC_CLK_TCK));
+
+  return ((total_time / sysconf(_SC_CLK_TCK)) / seconds);
+}
+
 // TODO: Read and return the command associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Command(int pid [[maybe_unused]]) { return string(); }
