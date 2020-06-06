@@ -238,13 +238,38 @@ float LinuxParser::ProcCpuUtilization(int pid) {
   return ((total_time / sysconf(_SC_CLK_TCK)) / seconds);
 }
 
-// TODO: Read and return the command associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Command(int pid [[maybe_unused]]) { return string(); }
+// DONE: Read and return the command associated with a process
+string LinuxParser::Command(int pid) {
+  std::string line;
+  std::ifstream stream(
+    kProcDirectory + std::to_string(pid) + kCmdlineFilename
+  );
 
-// TODO: Read and return the memory used by a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Ram(int pid [[maybe_unused]]) { return string(); }
+  if (!stream.is_open()) {
+    LOG_ERROR("Failed to open file")
+    return std::string();
+  }
+
+  std::getline(stream, line);
+  return line;
+}
+
+// DONE: Read and return the memory used by a process
+string LinuxParser::Ram(int pid) {
+  std::string line, key, ram;
+  std::ifstream stream(kProcDirectory + std::to_string(pid) + kStatusFilename);
+  
+  if (stream.is_open()) {
+    while (std::getline(stream, line)) {
+      std::istringstream linestream(line);
+      linestream >> key;
+      if (key == "VmSize:")
+        linestream >> ram;
+    }
+  }
+  
+  return ram; 
+}
 
 // TODO: Read and return the user ID associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
