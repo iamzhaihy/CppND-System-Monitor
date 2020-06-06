@@ -134,7 +134,7 @@ long LinuxParser::UpTime() {
   return std::stol(parseLine(line, R"(^([0-9.]+)\s.*)"));
 }
 
-// TODO: Read and return CPU utilization
+// DONE: Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() { 
   std::string line;
   std::ifstream stream(kProcDirectory + kStatFilename);

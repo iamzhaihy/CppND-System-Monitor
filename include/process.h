@@ -20,7 +20,6 @@ class Process {
   long int UpTime() const;                      
   bool operator<(Process const& a) const; 
 
-  // TODO: Declare any necessary private members
  private:
   int pid_;
   float cpu_usage_;
