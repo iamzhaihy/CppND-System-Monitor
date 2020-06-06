@@ -1,21 +1,23 @@
+#include "process.h"
+
 #include <unistd.h>
+
 #include <cctype>
 #include <sstream>
 #include <string>
 #include <vector>
 
-#include "process.h"
 #include "linux_parser.h"
 
 using std::string;
 using std::to_string;
 using std::vector;
 
-Process::Process(int pid): pid_(pid) {
+Process::Process(int pid) : pid_(pid) {
   cpu_usage_ = LinuxParser::ProcCpuUtilization(pid_);
-  uptime_ = LinuxParser::UpTime(pid_); 
+  uptime_ = LinuxParser::UpTime(pid_);
 
-  ram_ = LinuxParser::Ram(pid_);            
+  ram_ = LinuxParser::Ram(pid_);
   user_ = LinuxParser::User(pid_);
   command_ = LinuxParser::Command(pid_);
 }
@@ -31,7 +33,7 @@ string Process::Command() const { return command_; }
 
 // DONE: Return this process's memory utilization
 string Process::Ram() const {
-    return std::to_string((int) (std::stof(ram_)/1024));
+  return std::to_string((int)(std::stof(ram_) / 1024));
 }
 
 // DONE: Return the user (name) that generated this process
@@ -42,5 +44,5 @@ long int Process::UpTime() const { return uptime_; }
 
 // DONE: Overload the "less than" comparison operator for Process objects
 bool Process::operator<(Process const& a) const {
-    return this->CpuUtilization() < a.CpuUtilization();
+  return this->CpuUtilization() < a.CpuUtilization();
 }

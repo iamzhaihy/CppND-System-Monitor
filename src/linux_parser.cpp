@@ -3,17 +3,13 @@
 #include <dirent.h>
 #include <unistd.h>
 
+#include <iostream>
 #include <regex>
 #include <string>
 #include <vector>
-#include <iostream>
 
-#define LOG_ERROR(msg) {\
-    std::cerr << __FILE__ << ":" \
-              << __LINE__ << " " \
-              << msg << std::endl; \
-}
-
+#define LOG_ERROR(msg) \
+  { std::cerr << __FILE__ << ":" << __LINE__ << " " << msg << std::endl; }
 
 using std::stof;
 using std::string;
@@ -113,11 +109,11 @@ float LinuxParser::MemoryUtilization() {
 
   std::getline(stream, line);
   MemTotal = std::stof(parseLine(line, R"(MemTotal:\s+([0-9]*)\s+kB)"));
-    
+
   std::getline(stream, line);
   MemFree = std::stof(parseLine(line, R"(MemFree:\s+([0-9]*)\s+kB)"));
-    
-  return (MemTotal-MemFree)/(MemTotal);
+
+  return (MemTotal - MemFree) / (MemTotal);
 }
 
 // DONE: Read and return the system uptime
@@ -129,13 +125,13 @@ long LinuxParser::UpTime() {
     LOG_ERROR("Failed to open file")
     return -1;
   }
-  
+
   std::getline(stream, line);
   return std::stol(parseLine(line, R"(^([0-9.]+)\s.*)"));
 }
 
 // DONE: Read and return CPU utilization
-vector<string> LinuxParser::CpuUtilization() { 
+vector<string> LinuxParser::CpuUtilization() {
   std::string line;
   std::ifstream stream(kProcDirectory + kStatFilename);
 
@@ -145,7 +141,9 @@ vector<string> LinuxParser::CpuUtilization() {
   }
 
   std::getline(stream, line);
-  return parseLineAll(line, R"(^cpu\s+([0-9]*)\s+([0-9]*)\s+([0-9]*)\s+([0-9]*)\s+([0-9]*)\s+([0-9]*)\s+([0-9]*)\s+([0-9]*)\s+([0-9]*)\s+([0-9]*))");
+  return parseLineAll(
+      line,
+      R"(^cpu\s+([0-9]*)\s+([0-9]*)\s+([0-9]*)\s+([0-9]*)\s+([0-9]*)\s+([0-9]*)\s+([0-9]*)\s+([0-9]*)\s+([0-9]*)\s+([0-9]*))");
 }
 
 // DONE: Read and return the total number of processes
@@ -180,7 +178,7 @@ int LinuxParser::RunningProcesses() {
     LOG_ERROR("Failed to open file")
     return -1;
   }
-  
+
   while (stream) {
     std::getline(stream, line);
     if (line.find("procs_running") != std::string::npos) {
@@ -193,11 +191,9 @@ int LinuxParser::RunningProcesses() {
 }
 
 // DONE: Given a PID, compute and return the CPU usage
-float LinuxParser::ProcCpuUtilization(int pid) { 
+float LinuxParser::ProcCpuUtilization(int pid) {
   std::string line, rge;
-  std::ifstream stream(
-    kProcDirectory + std::to_string(pid) + kStatFilename
-  );
+  std::ifstream stream(kProcDirectory + std::to_string(pid) + kStatFilename);
 
   if (!stream.is_open()) {
     LOG_ERROR("Failed to open file")
@@ -225,7 +221,7 @@ float LinuxParser::ProcCpuUtilization(int pid) {
       cstime = std::stof(field);
     else if (count == 22)
       starttime = std::stol(field);
-    
+
     count++;
   }
 
@@ -241,15 +237,13 @@ float LinuxParser::ProcCpuUtilization(int pid) {
 // DONE: Read and return the command associated with a process
 string LinuxParser::Command(int pid) {
   std::string line;
-  std::ifstream stream(
-    kProcDirectory + std::to_string(pid) + kCmdlineFilename
-  );
+  std::ifstream stream(kProcDirectory + std::to_string(pid) + kCmdlineFilename);
 
   if (!stream.is_open()) {
     LOG_ERROR("Failed to open file")
     return std::string();
   }
-  
+
   std::getline(stream, line);
   return line;
 }
@@ -258,31 +252,28 @@ string LinuxParser::Command(int pid) {
 string LinuxParser::Ram(int pid) {
   std::string line, key, ram;
   std::ifstream stream(kProcDirectory + std::to_string(pid) + kStatusFilename);
-  
+
   if (stream.is_open()) {
     while (std::getline(stream, line)) {
       std::istringstream linestream(line);
       linestream >> key;
-      if (key == "VmSize:")
-        linestream >> ram;
+      if (key == "VmSize:") linestream >> ram;
     }
   }
-  
-  return ram; 
+
+  return ram;
 }
 
 // DONE: Read and return the user ID associated with a process
 string LinuxParser::Uid(int pid) {
   std::string line, uid;
-  std::ifstream stream(
-    kProcDirectory + std::to_string(pid) + kStatusFilename
-  );
+  std::ifstream stream(kProcDirectory + std::to_string(pid) + kStatusFilename);
 
   if (!stream.is_open()) {
     LOG_ERROR("Failed to open file")
     return std::string();
   }
-  
+
   while (stream) {
     std::getline(stream, line);
     if (line.find("Uid") != std::string::npos)
@@ -306,9 +297,8 @@ string LinuxParser::User(int pid) {
 
   while (stream) {
     std::getline(stream, line);
-    auto loc = line.find("x:"+uid+":");
-    if (loc != std::string::npos)
-      return line.substr(0, loc-1);
+    auto loc = line.find("x:" + uid + ":");
+    if (loc != std::string::npos) return line.substr(0, loc - 1);
   }
 
   return std::string();
@@ -317,9 +307,7 @@ string LinuxParser::User(int pid) {
 // DONE: Read and return the uptime of a process
 long LinuxParser::UpTime(int pid) {
   std::string line, rge;
-  std::ifstream stream(
-    kProcDirectory + std::to_string(pid) + kStatFilename
-  );
+  std::ifstream stream(kProcDirectory + std::to_string(pid) + kStatFilename);
 
   if (!stream.is_open()) {
     LOG_ERROR("Failed to open file")
@@ -336,9 +324,8 @@ long LinuxParser::UpTime(int pid) {
   while (count <= 50) {
     linestream >> field;
 
-    if (count == 22)
-      starttime = std::stol(field);
-    
+    if (count == 22) starttime = std::stol(field);
+
     count++;
   }
 

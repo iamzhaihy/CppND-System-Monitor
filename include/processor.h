@@ -4,13 +4,13 @@
 #include <vector>
 
 class Processor {
-public:
+ public:
   Processor();
   float Utilization();
 
-private:
+ private:
   std::vector<float> prev{10, 0.0};
-  std::vector<float> curr{10, 0.0}; 
+  std::vector<float> curr{10, 0.0};
 };
 
 #endif

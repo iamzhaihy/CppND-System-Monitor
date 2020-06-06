@@ -12,20 +12,20 @@ class Process {
   Process(int pid);
 
   // accessors
-  int Pid() const;                              
-  std::string User() const;                     
-  std::string Command() const;                  
-  float CpuUtilization() const;                 
-  std::string Ram() const;                      
-  long int UpTime() const;                      
-  bool operator<(Process const& a) const; 
+  int Pid() const;
+  std::string User() const;
+  std::string Command() const;
+  float CpuUtilization() const;
+  std::string Ram() const;
+  long int UpTime() const;
+  bool operator<(Process const& a) const;
 
  private:
   int pid_;
   float cpu_usage_;
-  long int uptime_; 
+  long int uptime_;
 
-  std::string ram_;                      
+  std::string ram_;
   std::string user_;
   std::string command_;
 };
