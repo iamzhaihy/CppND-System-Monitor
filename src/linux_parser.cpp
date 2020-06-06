@@ -249,7 +249,7 @@ string LinuxParser::Command(int pid) {
     LOG_ERROR("Failed to open file")
     return std::string();
   }
-
+  
   std::getline(stream, line);
   return line;
 }
@@ -314,6 +314,33 @@ string LinuxParser::User(int pid) {
   return std::string();
 }
 
-// TODO: Read and return the uptime of a process
-// REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::UpTime(int pid [[maybe_unused]]) { return 0; }
+// DONE: Read and return the uptime of a process
+long LinuxParser::UpTime(int pid) {
+  std::string line, rge;
+  std::ifstream stream(
+    kProcDirectory + std::to_string(pid) + kStatFilename
+  );
+
+  if (!stream.is_open()) {
+    LOG_ERROR("Failed to open file")
+    return {};
+  }
+
+  std::string field;
+  std::getline(stream, line);
+  std::istringstream linestream(line);
+
+  int count = 1;
+  long starttime = 0;
+
+  while (count <= 50) {
+    linestream >> field;
+
+    if (count == 22)
+      starttime = std::stol(field);
+    
+    count++;
+  }
+
+  return starttime;
+}
