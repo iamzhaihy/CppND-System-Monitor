@@ -306,12 +306,12 @@ string LinuxParser::User(int pid) {
 
 // DONE: Read and return the uptime of a process
 long LinuxParser::UpTime(int pid) {
-  std::string line, rge;
+  std::string line;
   std::ifstream stream(kProcDirectory + std::to_string(pid) + kStatFilename);
 
   if (!stream.is_open()) {
     LOG_ERROR("Failed to open file")
-    return {};
+    return -1;
   }
 
   std::string field;
@@ -321,13 +321,8 @@ long LinuxParser::UpTime(int pid) {
   int count = 1;
   long starttime = 0;
 
-  while (count <= 50) {
+  for(int i = 0; i < 22; i++){ 
     linestream >> field;
 
-    if (count == 22) starttime = std::stol(field);
-
-    count++;
-  }
-
-  return starttime;
+  return LinuxParser::UpTime() - stol(field)/sysconf(_SC_CLK_TCK);
 }
